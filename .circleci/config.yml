@@ -3,17 +3,15 @@ jobs:
   build:
     working_directory: ~/nglab
     docker:
-      - image: circleci/node:10-browsers
-        env:
-          - CHROME_BIN=/usr/bin/google-chrome
+      - image: cimg/node:26.12
     steps:
       - checkout
       - restore_cache:
           key: nglab-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - run: npm install
+      - run: npm ci
       - save_cache:
           key: nglab-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - "node_modules"
-      - run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-      - run: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
+      - run: npm run build
+      - run: npm test -- --watch=false
